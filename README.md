@@ -6,3 +6,4 @@ Diseñar y construir para ser usado en talleres aeronáuticos y mecánicos un si
 ## Integrantes
 - Orellana, Maximiliano.
 - Guzman, Juan.
+- Nuñez Piedras, Sebastian.
