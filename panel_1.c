@@ -6,6 +6,7 @@
  */
 
 #include "configuracion_panel_1.h"
+#include "lcd.c"
 
 void main(void) {
     return;
