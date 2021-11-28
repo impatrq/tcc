@@ -22,7 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +41,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
-DMA_HandleTypeDef hdma_adc1;
+
+TIM_HandleTypeDef htim3;
+
+UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
@@ -51,23 +54,31 @@ DMA_HandleTypeDef hdma_adc1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_DMA_Init(void);
+static void MX_USART1_UART_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-typedef struct {
+struct Limite{
 	uint32_t 	verde,
 				amarillo;
 
+	uint32_t valor;
 	uint16_t pos[2];
+	uint32_t time;
+	bool out[2];
+	bool out_prev[2];
+	GPIO_TypeDef *port[2];
 	int n;
+	ADC_ChannelConfTypeDef ch;
 
 	struct Limite *sig;
-}Limite;
+};
 
+uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
 /* USER CODE END 0 */
 
 /**
