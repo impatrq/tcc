@@ -109,17 +109,35 @@ int main(void)
 	NO.sig = &SO;
 	SO.sig = &CO;
 
+	CO.time=0;
+	SO.time=0;
+	NO.time=0;
+
+	CO.out_prev[0]=0;
+	CO.out_prev[1]=0;
+	NO.out_prev[0]=0;
+	NO.out_prev[1]=0;
+	SO.out_prev[0]=0;
+	SO.out_prev[1]=0;
+
 	CO.n = 0;
 	NO.n = 1;
 	SO.n = 2;
 
-	CO.pos[0] = 0x0020;	// pin 5
-	CO.pos[1] = 0x0040;	// pin 6
-	NO.pos[0] = 0x0080;	// pin 7
-	NO.pos[1] = 0x0100; // pin 8
-	SO.pos[0] = 0x0200; // pin 9
-	SO.pos[1] = 0x0400; // pin 10
+	CO.port[0] = CO1_GPIO_Port;
+	CO.port[1] = CO2_GPIO_Port;
+	CO.pos[0] = CO1_Pin;
+	CO.pos[1] = CO2_Pin;
 
+	NO.port[0] = NO1_GPIO_Port;
+	NO.port[1] = NO2_GPIO_Port;
+	NO.pos[0] = NO1_Pin;
+	NO.pos[1] = NO2_Pin;
+
+	SO.port[0] = SO1_GPIO_Port;
+	SO.port[1] = SO2_GPIO_Port;
+	SO.pos[0] = SO1_Pin;
+	SO.pos[1] = SO2_Pin;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
