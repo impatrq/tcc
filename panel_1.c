@@ -91,8 +91,8 @@ int main(void)
 	NO.verde=2800;
 	NO.amarillo=4000;
 
-	SO.verde=900;
-	SO.amarillo=1100;
+	SO.verde=1400;
+	SO.amarillo=2800;
 
 	CO.sig = &NO;
 	NO.sig = &SO;
