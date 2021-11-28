@@ -138,6 +138,26 @@ int main(void)
 	SO.port[1] = SO2_GPIO_Port;
 	SO.pos[0] = SO1_Pin;
 	SO.pos[1] = SO2_Pin;
+
+  CO.ch.Channel = ADC_CHANNEL_1;
+	CO.ch.Rank = ADC_REGULAR_RANK_1;
+	CO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	NO.ch.Channel = ADC_CHANNEL_2;
+	NO.ch.Rank = ADC_REGULAR_RANK_1;
+	NO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	SO.ch.Channel = ADC_CHANNEL_3;
+	SO.ch.Rank = ADC_REGULAR_RANK_1;
+	SO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	ADC_ChannelConfTypeDef sdr_canal;
+	sdr_canal.Channel = ADC_CHANNEL_4;
+	sdr_canal.Rank = ADC_REGULAR_RANK_1;
+	sdr_canal.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	uint8_t dato;
+    
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
