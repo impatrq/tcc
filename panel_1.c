@@ -85,8 +85,8 @@ int main(void)
 	 */
 	Limite CO,NO,SO;
 
-	CO.verde=2000;
-	CO.amarillo=4000;
+	CO.verde=1600 ;
+	CO.amarillo=2600;
 
 	NO.verde=1500;
 	NO.amarillo=3400;
