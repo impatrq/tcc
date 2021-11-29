@@ -157,8 +157,8 @@ int main(void)
 	sdr_canal.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 
 	uint8_t dato;
-    
-  /* USER CODE END 1 */
+
+/* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -173,23 +173,29 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  HAL_ADC_Start_DMA(&hadc1, value, 4);
+  
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
-  MX_DMA_Init();
+  MX_USART1_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  //12 bits de resolucion
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  Limite* aux;
-  aux = &CO;
+  	struct Limite* aux;
+	aux = &CO;
+	uint8_t f_parlante=0;
 
+	HAL_GPIO_WritePin(GPIOA, parlante_Pin, RESET);
+	HAL_TIM_Base_Start(&htim3);
+	HAL_GPIO_WritePin(CO1_GPIO_Port, CO1_Pin, SET);
   while (1)
   {
 	  if(value[aux->n] < aux->verde){
