@@ -62,6 +62,8 @@ void StartDefaultTask(void const * argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+//variables
+
 struct Gas{
 	uint32_t verde,
 			 amarillo;
@@ -76,8 +78,17 @@ struct Gas{
 	ADC_ChannelConfTypeDef ch;
 
 	struct Gas *sig;
-};
+}CO, NO, SO;
+struct Gas* aux;
 
+uint32_t time=0,
+		 MaximoRuido = 1000;
+
+uint8_t dato;
+
+bool dato;
+
+//funcion
 uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
 
 /* USER CODE END 0 */
@@ -89,6 +100,76 @@ uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+	//limites
+	CO.verde=1600;
+	CO.amarillo=2600;
+
+	NO.verde=2800;
+	NO.amarillo=4000;
+
+	SO.verde=1400;
+	SO.amarillo=2400;
+
+	//creacion de lista cicular
+	CO.sig = &NO;
+	NO.sig = &SO;
+	SO.sig = &CO;
+
+	// time init
+	CO.time=0;
+	SO.time=0;
+	NO.time=0;
+
+	// out_prev init
+	CO.out_prev[0]=0;
+	CO.out_prev[1]=0;
+	NO.out_prev[0]=0;
+	NO.out_prev[1]=0;
+	SO.out_prev[0]=0;
+	SO.out_prev[1]=0;
+
+	// asignar ID
+	CO.n = 0;
+	NO.n = 1;
+	SO.n = 2;
+
+	// configuracion de pines
+	CO.port[0] = CO1_GPIO_Port;
+	CO.port[1] = CO2_GPIO_Port;
+	CO.pos[0] = CO1_Pin;
+	CO.pos[1] = CO2_Pin;
+
+	NO.port[0] = NO1_GPIO_Port;
+	NO.port[1] = NO2_GPIO_Port;
+	NO.pos[0] = NO1_Pin;
+	NO.pos[1] = NO2_Pin;
+
+	SO.port[0] = SO1_GPIO_Port;
+	SO.port[1] = SO2_GPIO_Port;
+	SO.pos[0] = SO1_Pin;
+	SO.pos[1] = SO2_Pin;
+
+	//configuracion de pines ADC
+	CO.ch.Channel = ADC_CHANNEL_1;
+	CO.ch.Rank = ADC_REGULAR_RANK_1;
+	CO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	NO.ch.Channel = ADC_CHANNEL_2;
+	NO.ch.Rank = ADC_REGULAR_RANK_1;
+	NO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	SO.ch.Channel = ADC_CHANNEL_3;
+	SO.ch.Rank = ADC_REGULAR_RANK_1;
+	SO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	ADC_ChannelConfTypeDef sdr_canal;
+	sdr_canal.Channel = ADC_CHANNEL_4;
+	sdr_canal.Rank = ADC_REGULAR_RANK_1;
+	sdr_canal.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+
+	// incializacion de puntero que recorre lista circular
+	aux = &CO;
 
   /* USER CODE END 1 */
 
