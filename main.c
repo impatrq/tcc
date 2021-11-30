@@ -440,6 +440,7 @@ void StartTask02(void const * argument)
 			  f_parlante = RESET;
 			  dato &= ~(1 << 6);
 		  }
+		  HAL_UART_Transmit(&huart1, &dato, 1, 0xffff);
 		  dato &= ~(1 << 8);
 	  }
     osDelay(1);
