@@ -101,7 +101,7 @@ int main(void)
   CO.verde = 1641;
   CO.amarillo = 2637;
 
-  NO.verde = 2800;
+  NO.verde = 2893;
   NO.amarillo = 4000;
 
   SO.verde = 1400;
