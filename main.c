@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+#include <stdbool.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,6 +61,22 @@ void StartDefaultTask(void const * argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+struct Gas{
+	uint32_t verde,
+			 amarillo;
+
+	uint32_t valor;
+	uint16_t pos[2];
+	uint32_t time;
+	bool out[2];
+	bool out_prev[2];
+	GPIO_TypeDef *port[2];
+	int n;
+	ADC_ChannelConfTypeDef ch;
+
+	struct Gas *sig;
+};
 
 /* USER CODE END 0 */
 
