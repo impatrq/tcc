@@ -409,6 +409,7 @@ void StartTask1(void const * argument)
 		  dato = dato | (1 << aux->n*2);
 		  dato = dato & ~(1 << (aux->n*2+1));
 	  }
+	  aux = aux->sig;
     osDelay(1);
   }
   /* USER CODE END 5 */
