@@ -44,9 +44,11 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-osThreadId Task1Handle;
-osThreadId myTask02Handle;
-osThreadId myTask03Handle;
+UART_HandleTypeDef huart1;
+
+osThreadId ReciveTaskHandle;
+osThreadId RuidoTaskHandle;
+osThreadId ControlTaskHandle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -55,9 +57,10 @@ osThreadId myTask03Handle;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_USART1_UART_Init(void);
 void StartTask1(void const * argument);
-void StartTask02(void const * argument);
-void StartTask03(void const * argument);
+void StartRuidoTask(void const * argument);
+void StartControlTask(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -92,6 +95,8 @@ uint8_t dato = 0;
 
 bool f_parlante,
 	 f_SdR;
+
+ADC_ChannelConfTypeDef sdr_canal;
 
 //funcion
 uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
@@ -168,7 +173,6 @@ int main(void)
 	SO.ch.Rank = ADC_REGULAR_RANK_1;
 	SO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 
-	ADC_ChannelConfTypeDef sdr_canal;
 	sdr_canal.Channel = ADC_CHANNEL_4;
 	sdr_canal.Rank = ADC_REGULAR_RANK_1;
 	sdr_canal.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
@@ -197,6 +201,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -218,17 +223,17 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of Task1 */
-  osThreadDef(Task1, StartTask1, osPriorityNormal, 0, 128);
-  Task1Handle = osThreadCreate(osThread(Task1), NULL);
+  /* definition and creation of ReciveTask */
+  osThreadDef(ReciveTask, StartTask1, osPriorityAboveNormal, 0, 128);
+  ReciveTaskHandle = osThreadCreate(osThread(ReciveTask), NULL);
 
-  /* definition and creation of myTask02 */
-  osThreadDef(myTask02, StartTask02, osPriorityIdle, 0, 128);
-  myTask02Handle = osThreadCreate(osThread(myTask02), NULL);
+  /* definition and creation of RuidoTask */
+  osThreadDef(RuidoTask, StartRuidoTask, osPriorityLow, 0, 128);
+  RuidoTaskHandle = osThreadCreate(osThread(RuidoTask), NULL);
 
-  /* definition and creation of myTask03 */
-  osThreadDef(myTask03, StartTask03, osPriorityIdle, 0, 128);
-  myTask03Handle = osThreadCreate(osThread(myTask03), NULL);
+  /* definition and creation of ControlTask */
+  osThreadDef(ControlTask, StartControlTask, osPriorityIdle, 0, 128);
+  ControlTaskHandle = osThreadCreate(osThread(ControlTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -302,6 +307,8 @@ static void MX_ADC1_Init(void)
 
   /* USER CODE END ADC1_Init 0 */
 
+  ADC_ChannelConfTypeDef sConfig = {0};
+
   /* USER CODE BEGIN ADC1_Init 1 */
 
   /* USER CODE END ADC1_Init 1 */
@@ -318,9 +325,72 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_2;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_3;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /** Configure Regular Channel
+  */
+  sConfig.Rank = ADC_REGULAR_RANK_4;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 9600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -410,29 +480,29 @@ void StartTask1(void const * argument)
 		  dato = dato | (1 << aux->n*2);
 		  dato = dato & ~(1 << (aux->n*2+1));
 	  }
-	if(aux==SO) dato |= (1 << 8);
+	if(aux==&SO) dato |= (1 << 8);
 	aux = aux->sig;
     osDelay(1);
   }
   /* USER CODE END 5 */
 }
 
-/* USER CODE BEGIN Header_StartTask02 */
+/* USER CODE BEGIN Header_StartRuidoTask */
 /**
-* @brief Function implementing the myTask02 thread.
+* @brief Function implementing the RuidoTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartTask02 */
-void StartTask02(void const * argument)
+/* USER CODE END Header_StartRuidoTask */
+void StartRuidoTask(void const * argument)
 {
-  /* USER CODE BEGIN StartTask02 */
+  /* USER CODE BEGIN StartRuidoTask */
   /* Infinite loop */
   for(;;)
   {
 	  if(dato && (1 << 8)){
 		  if(get_adc_value(&sdr_canal) > MaximoRuido){
-			  f_rudio = SET;
+			  f_SdR = SET;
 			  f_parlante = SET;
 			  dato |= (0 << 6);
 		  }else{
@@ -443,21 +513,21 @@ void StartTask02(void const * argument)
 		  HAL_UART_Transmit(&huart1, &dato, 1, 0xffff);
 		  dato &= ~(1 << 8);
 	  }
-    osDelay(3);
+	  osDelay(3);
   }
-  /* USER CODE END StartTask02 */
+  /* USER CODE END StartRuidoTask */
 }
 
-/* USER CODE BEGIN Header_StartTask03 */
+/* USER CODE BEGIN Header_StartControlTask */
 /**
-* @brief Function implementing the myTask03 thread.
+* @brief Function implementing the ControlTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_StartTask03 */
-void StartTask03(void const * argument)
+/* USER CODE END Header_StartControlTask */
+void StartControlTask(void const * argument)
 {
-  /* USER CODE BEGIN StartTask03 */
+  /* USER CODE BEGIN StartControlTask */
   /* Infinite loop */
   for(;;)
   {
@@ -470,12 +540,12 @@ void StartTask03(void const * argument)
 	  HAL_GPIO_WritePin(SO.port[0], SO.pos[0], SO.out[0]);
 	  HAL_GPIO_WritePin(SO.port[1], SO.pos[1], SO.out[1]);
 
-	  HAL_GPIO_WritePin(parlante_GPIO_Port, parlante_Pin, ~f_parlante);
+	  HAL_GPIO_WritePin(parlante_GPIO_Port, parlante_Pin, !f_parlante);
 	  HAL_GPIO_WritePin(SdR_GPIO_Port, SdR_Pin, f_SdR);
 
 	  osDelay(2000);
   }
-  /* USER CODE END StartTask03 */
+  /* USER CODE END StartControlTask */
 }
 
 /**
