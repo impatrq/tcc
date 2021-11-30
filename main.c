@@ -85,12 +85,13 @@ struct Gas{
 }CO, NO, SO;
 struct Gas* aux;
 
-uint32_t time=0,
+uint32_t time = 0,
 		 MaximoRuido = 1000;
 
-uint8_t dato;
+uint8_t dato = 0;
 
-bool dato;
+bool f_parlante,
+	 f_SdR;
 
 //funcion
 uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
@@ -409,7 +410,8 @@ void StartTask1(void const * argument)
 		  dato = dato | (1 << aux->n*2);
 		  dato = dato & ~(1 << (aux->n*2+1));
 	  }
-	  aux = aux->sig;
+	if(aux==SO) dato |= (1 << 8);
+	aux = aux->sig;
     osDelay(1);
   }
   /* USER CODE END 5 */
@@ -428,6 +430,18 @@ void StartTask02(void const * argument)
   /* Infinite loop */
   for(;;)
   {
+	  if(dato && (1 << 8)){
+		  if(get_adc_value(&sdr_canal) > MaximoRuido){
+			  f_rudio = SET;
+			  f_parlante = SET;
+			  dato |= (0 << 6);
+		  }else{
+			  f_SdR = RESET;
+			  f_parlante = RESET;
+			  dato &= ~(1 << 6);
+		  }
+		  dato &= ~(1 << 8);
+	  }
     osDelay(1);
   }
   /* USER CODE END StartTask02 */
