@@ -99,7 +99,7 @@ int main(void)
   Limite CO, NO, SO;
 
   CO.verde = 1641;
-  CO.amarillo = 2600;
+  CO.amarillo = 2637;
 
   NO.verde = 2800;
   NO.amarillo = 4000;
