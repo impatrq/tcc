@@ -443,7 +443,7 @@ void StartTask02(void const * argument)
 		  HAL_UART_Transmit(&huart1, &dato, 1, 0xffff);
 		  dato &= ~(1 << 8);
 	  }
-    osDelay(1);
+    osDelay(3);
   }
   /* USER CODE END StartTask02 */
 }
@@ -461,7 +461,19 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+	  HAL_GPIO_WritePin(CO.port[0], CO.pos[0], CO.out[0]);
+	  HAL_GPIO_WritePin(CO.port[1], CO.pos[1], CO.out[1]);
+
+	  HAL_GPIO_WritePin(NO.port[0], NO.pos[0], NO.out[0]);
+	  HAL_GPIO_WritePin(NO.port[1], NO.pos[1], NO.out[1]);
+
+	  HAL_GPIO_WritePin(SO.port[0], SO.pos[0], SO.out[0]);
+	  HAL_GPIO_WritePin(SO.port[1], SO.pos[1], SO.out[1]);
+
+	  HAL_GPIO_WritePin(parlante_GPIO_Port, parlante_Pin, ~f_parlante);
+	  HAL_GPIO_WritePin(SdR_GPIO_Port, SdR_Pin, f_SdR);
+
+	  osDelay(2000);
   }
   /* USER CODE END StartTask03 */
 }
