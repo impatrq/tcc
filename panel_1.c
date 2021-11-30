@@ -102,7 +102,7 @@ int main(void)
   CO.amarillo = 2637;
 
   NO.verde = 2893;
-  NO.amarillo = 4000;
+  NO.amarillo = 4129;
 
   SO.verde = 1400;
   SO.amarillo = 2400;
