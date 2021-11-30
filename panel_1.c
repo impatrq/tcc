@@ -62,20 +62,22 @@ static void MX_TIM3_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-struct Limite{
-	uint32_t 	verde,
-				amarillo;
+struct Limite
+{
 
-	uint32_t valor;
-	uint16_t pos[2];
-	uint32_t time;
-	bool out[2];
-	bool out_prev[2];
-	GPIO_TypeDef *port[2];
-	int n;
-	ADC_ChannelConfTypeDef ch;
+  uint32_t verde,
+      amarillo;
 
-	struct Limite *sig;
+  uint32_t valor;
+  uint16_t pos[2];
+  uint32_t time;
+  bool out[2];
+  bool out_prev[2];
+  GPIO_TypeDef *port[2];
+  int n;
+  ADC_ChannelConfTypeDef ch;
+
+  struct Limite *sig;
 };
 
 uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
@@ -88,77 +90,77 @@ uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	uint32_t value[4];	// canal 0 = [0], canal 1 = [1], canal n = [n]...
-	/* 	monoxido de carbono canal 1
+  uint32_t value[4]; // canal 0 = [0], canal 1 = [1], canal n = [n]...
+  /* 	monoxido de carbono canal 1
 	 * 	dioxido de nitrogeno canal 2
 	 * 	sensor de ruido canal 3
 	 * 	sensor opcional canal 4
 	 */
-	Limite CO,NO,SO;
+  Limite CO, NO, SO;
 
-	CO.verde=1640 ;
-	CO.amarillo=2600;
+  CO.verde = 1640;
+  CO.amarillo = 2600;
 
-	NO.verde=2800;
-	NO.amarillo=4000;
+  NO.verde = 2800;
+  NO.amarillo = 4000;
 
-	SO.verde=1400;
-	SO.amarillo=2400;
+  SO.verde = 1400;
+  SO.amarillo = 2400;
 
-	CO.sig = &NO;
-	NO.sig = &SO;
-	SO.sig = &CO;
+  CO.sig = &NO;
+  NO.sig = &SO;
+  SO.sig = &CO;
 
-	CO.time=0;
-	SO.time=0;
-	NO.time=0;
+  CO.time = 0;
+  SO.time = 0;
+  NO.time = 0;
 
-	CO.out_prev[0]=0;
-	CO.out_prev[1]=0;
-	NO.out_prev[0]=0;
-	NO.out_prev[1]=0;
-	SO.out_prev[0]=0;
-	SO.out_prev[1]=0;
+  CO.out_prev[0] = 0;
+  CO.out_prev[1] = 0;
+  NO.out_prev[0] = 0;
+  NO.out_prev[1] = 0;
+  SO.out_prev[0] = 0;
+  SO.out_prev[1] = 0;
 
-	CO.n = 0;
-	NO.n = 1;
-	SO.n = 2;
+  CO.n = 0;
+  NO.n = 1;
+  SO.n = 2;
 
-	CO.port[0] = CO1_GPIO_Port;
-	CO.port[1] = CO2_GPIO_Port;
-	CO.pos[0] = CO1_Pin;
-	CO.pos[1] = CO2_Pin;
+  CO.port[0] = CO1_GPIO_Port;
+  CO.port[1] = CO2_GPIO_Port;
+  CO.pos[0] = CO1_Pin;
+  CO.pos[1] = CO2_Pin;
 
-	NO.port[0] = NO1_GPIO_Port;
-	NO.port[1] = NO2_GPIO_Port;
-	NO.pos[0] = NO1_Pin;
-	NO.pos[1] = NO2_Pin;
+  NO.port[0] = NO1_GPIO_Port;
+  NO.port[1] = NO2_GPIO_Port;
+  NO.pos[0] = NO1_Pin;
+  NO.pos[1] = NO2_Pin;
 
-	SO.port[0] = SO1_GPIO_Port;
-	SO.port[1] = SO2_GPIO_Port;
-	SO.pos[0] = SO1_Pin;
-	SO.pos[1] = SO2_Pin;
+  SO.port[0] = SO1_GPIO_Port;
+  SO.port[1] = SO2_GPIO_Port;
+  SO.pos[0] = SO1_Pin;
+  SO.pos[1] = SO2_Pin;
 
   CO.ch.Channel = ADC_CHANNEL_1;
-	CO.ch.Rank = ADC_REGULAR_RANK_1;
-	CO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  CO.ch.Rank = ADC_REGULAR_RANK_1;
+  CO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 
-	NO.ch.Channel = ADC_CHANNEL_2;
-	NO.ch.Rank = ADC_REGULAR_RANK_1;
-	NO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  NO.ch.Channel = ADC_CHANNEL_2;
+  NO.ch.Rank = ADC_REGULAR_RANK_1;
+  NO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 
-	SO.ch.Channel = ADC_CHANNEL_3;
-	SO.ch.Rank = ADC_REGULAR_RANK_1;
-	SO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  SO.ch.Channel = ADC_CHANNEL_3;
+  SO.ch.Rank = ADC_REGULAR_RANK_1;
+  SO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 
-	ADC_ChannelConfTypeDef sdr_canal;
-	sdr_canal.Channel = ADC_CHANNEL_4;
-	sdr_canal.Rank = ADC_REGULAR_RANK_1;
-	sdr_canal.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
+  ADC_ChannelConfTypeDef sdr_canal;
+  sdr_canal.Channel = ADC_CHANNEL_4;
+  sdr_canal.Rank = ADC_REGULAR_RANK_1;
+  sdr_canal.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
 
-	uint8_t dato;
+  uint8_t dato;
 
-/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -173,7 +175,6 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  
 
   /* USER CODE END SysInit */
 
@@ -189,38 +190,43 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  	struct Limite* aux;
-	aux = &CO;
-	uint8_t f_parlante=0;
+  struct Limite *aux;
+  aux = &CO;
+  uint8_t f_parlante = 0;
 
-	HAL_GPIO_WritePin(GPIOA, parlante_Pin, RESET);
-	HAL_TIM_Base_Start(&htim3);
-	HAL_GPIO_WritePin(CO1_GPIO_Port, CO1_Pin, SET);
+  HAL_GPIO_WritePin(GPIOA, parlante_Pin, RESET);
+  HAL_TIM_Base_Start(&htim3);
+  HAL_GPIO_WritePin(CO1_GPIO_Port, CO1_Pin, SET);
   while (1)
   {
-	  if(value[aux->n] < aux->verde){
-		  //prender led verde de la posicion auxiliar.
-		  //apagar led amarillo de la posicion auxiliar.
-		  //apagar led rojo de la posicion auxiliar.
-		  HAL_GPIO_WritePin(GPIOA, aux->pos[0], RESET);
-		  HAL_GPIO_WritePin(GPIOA, aux->pos[1], RESET);
-	  }else if(value[aux->n] < aux->amarillo){
-		  //prender led verde de la posicion auxiliar.
-		  //prender led amarillo de la posicion auxiliar.
-		  //apagar led rojo de la posicion auxiliar.
-		  HAL_GPIO_WritePin(GPIOA, aux->pos[0], RESET);
-		  HAL_GPIO_WritePin(GPIOA, aux->pos[1], SET);
-	  }else{
-		  //apagar led verde de la posicion auxiliar.
-		  //apagar led amarillo de la posicion auxiliar.
-		  //prender led rojo de la posicion auxiliar.
-		  HAL_GPIO_WritePin(GPIOA, aux->pos[0], SET);
-		  HAL_GPIO_WritePin(GPIOA, aux->pos[1], RESET);
-	  }
+    if (value[aux->n] < aux->verde)
+    {
+      //prender led verde de la posicion auxiliar.
+      //apagar led amarillo de la posicion auxiliar.
+      //apagar led rojo de la posicion auxiliar.
+      HAL_GPIO_WritePin(GPIOA, aux->pos[0], RESET);
+      HAL_GPIO_WritePin(GPIOA, aux->pos[1], RESET);
+    }
+    else if (value[aux->n] < aux->amarillo)
+    {
+      //prender led verde de la posicion auxiliar.
+      //prender led amarillo de la posicion auxiliar.
+      //apagar led rojo de la posicion auxiliar.
+      HAL_GPIO_WritePin(GPIOA, aux->pos[0], RESET);
+      HAL_GPIO_WritePin(GPIOA, aux->pos[1], SET);
+    }
+    else
+    {
+      //apagar led verde de la posicion auxiliar.
+      //apagar led amarillo de la posicion auxiliar.
+      //prender led rojo de la posicion auxiliar.
+      HAL_GPIO_WritePin(GPIOA, aux->pos[0], SET);
+      HAL_GPIO_WritePin(GPIOA, aux->pos[1], RESET);
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	aux = aux->sig;
+    aux = aux->sig;
   }
   /* USER CODE END 3 */
 }
@@ -248,8 +254,7 @@ void SystemClock_Config(void)
   }
   /** Initializes the CPU, AHB and APB buses clocks
   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -333,7 +338,6 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
-
 }
 
 /**
@@ -349,7 +353,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel1_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-
 }
 
 /**
@@ -365,18 +368,15 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, pin_uno_Pin|pin_dos_Pin|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, pin_uno_Pin | pin_dos_Pin | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : pin_uno_Pin pin_dos_Pin PA7 PA8
                            PA9 PA10 PA11 PA12 */
-  GPIO_InitStruct.Pin = pin_uno_Pin|pin_dos_Pin|GPIO_PIN_7|GPIO_PIN_8
-                          |GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12;
+  GPIO_InitStruct.Pin = pin_uno_Pin | pin_dos_Pin | GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -398,7 +398,7 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
