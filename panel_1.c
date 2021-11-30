@@ -105,7 +105,7 @@ int main(void)
   NO.amarillo = 4129;
 
   SO.verde = 1452;
-  SO.amarillo = 2400;
+  SO.amarillo = 2469;
 
   CO.sig = &NO;
   NO.sig = &SO;
