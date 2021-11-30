@@ -78,6 +78,8 @@ struct Gas{
 	struct Gas *sig;
 };
 
+uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal);
+
 /* USER CODE END 0 */
 
 /**
@@ -278,6 +280,16 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal){
+	if(HAL_ADC_ConfigChannel(&hadc1, canal) == HAL_ERROR)
+		Error_Handler();
+	HAL_ADC_Start(&hadc1);
+	HAL_ADC_PollForConversion(&hadc1, 100);
+	uint32_t valor = HAL_ADC_GetValue(&hadc1);
+	HAL_ADC_Stop(&hadc1);
+	return valor;
+}
 
 /* USER CODE END 4 */
 
