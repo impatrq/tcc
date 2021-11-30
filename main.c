@@ -44,7 +44,9 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-osThreadId defaultTaskHandle;
+osThreadId Task1Handle;
+osThreadId myTask02Handle;
+osThreadId myTask03Handle;
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -53,7 +55,9 @@ osThreadId defaultTaskHandle;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
-void StartDefaultTask(void const * argument);
+void StartTask1(void const * argument);
+void StartTask02(void const * argument);
+void StartTask03(void const * argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -213,9 +217,17 @@ int main(void)
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of Task1 */
+  osThreadDef(Task1, StartTask1, osPriorityNormal, 0, 128);
+  Task1Handle = osThreadCreate(osThread(Task1), NULL);
+
+  /* definition and creation of myTask02 */
+  osThreadDef(myTask02, StartTask02, osPriorityIdle, 0, 128);
+  myTask02Handle = osThreadCreate(osThread(myTask02), NULL);
+
+  /* definition and creation of myTask03 */
+  osThreadDef(myTask03, StartTask03, osPriorityIdle, 0, 128);
+  myTask03Handle = osThreadCreate(osThread(myTask03), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -305,30 +317,16 @@ static void MX_ADC1_Init(void)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
-  *
-  * ADC_ChannelConfTypeDef sConfig = {0};
-  * CO.ch.Channel = ADC_CHANNEL_1;
-	CO.ch.Rank = ADC_REGULAR_RANK_1;
-	CO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-
-	NO.ch.Channel = ADC_CHANNEL_2;
-	NO.ch.Rank = ADC_REGULAR_RANK_1;
-	NO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-
-	SO.ch.Channel = ADC_CHANNEL_3;
-	SO.ch.Rank = ADC_REGULAR_RANK_1;
-	SO.ch.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
-
-	ADC_ChannelConfTypeDef sdr_canal;
-	sdr_canal.Channel = ADC_CHANNEL_4;
-	sdr_canal.Rank = ADC_REGULAR_RANK_1;
-	sdr_canal.SamplingTime = ADC_SAMPLETIME_1CYCLE_5;
   */
 static void MX_GPIO_Init(void)
 {
@@ -374,22 +372,82 @@ uint32_t get_adc_value(ADC_ChannelConfTypeDef *canal){
 
 /* USER CODE END 4 */
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_StartTask1 */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the Task1 thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_StartTask1 */
+void StartTask1(void const * argument)
 {
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
   {
+	aux->valor = get_adc_value(&aux->ch);
+	  if(aux->valor < aux->verde){
+		  // salida
+		  aux->out[0] = RESET;
+		  aux->out[1] = RESET;
+		  // generar dato para transmicion
+		  dato = dato & ~(1 << aux->n*2);
+		  dato = dato & ~(1 << (aux->n*2+1));
+	  }
+	  else if(aux->valor < aux->amarillo){
+		  aux->out[0] = RESET;
+		  aux->out[1] = SET;
+
+		  dato = dato & ~(1 << aux->n*2);
+		  dato = dato | (1 << (aux->n*2+1));
+	  }
+	  else{
+		  aux->out[0] = SET;
+		  aux->out[1] = SET;
+		  HAL_GPIO_WritePin(parlante_GPIO_Port, parlante_Pin, RESET);
+
+		  dato = dato | (1 << aux->n*2);
+		  dato = dato & ~(1 << (aux->n*2+1));
+	  }
     osDelay(1);
   }
   /* USER CODE END 5 */
+}
+
+/* USER CODE BEGIN Header_StartTask02 */
+/**
+* @brief Function implementing the myTask02 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask02 */
+void StartTask02(void const * argument)
+{
+  /* USER CODE BEGIN StartTask02 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask02 */
+}
+
+/* USER CODE BEGIN Header_StartTask03 */
+/**
+* @brief Function implementing the myTask03 thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTask03 */
+void StartTask03(void const * argument)
+{
+  /* USER CODE BEGIN StartTask03 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartTask03 */
 }
 
 /**
